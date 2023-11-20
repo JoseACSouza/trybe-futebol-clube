@@ -1,19 +1,24 @@
 import * as express from 'express';
 import TeamController from './controllers/TeamController';
 import LoginController from './controllers/LoginController';
+import MatchController from './controllers/MatchController';
 import { validateFields, verifyFields } from './middlewares/Login.validate';
 import auth from './middlewares/Auth.validate';
+import { validateMatch, verifyEqualTeams } from './middlewares/Match.validate';
 
 class App {
   public app: express.Express;
   public team: TeamController;
   public login: LoginController;
+  public matches: MatchController;
 
+  // eslint-disable-next-line max-lines-per-function
   constructor() {
     this.app = express();
     this.config();
     this.team = new TeamController();
     this.login = new LoginController();
+    this.matches = new MatchController();
 
     // Não remover essa rota
     this.app.get('/', (req, res) => res.json({ ok: true }));
@@ -33,6 +38,18 @@ class App {
       '/login/role',
       auth,
       async (_req, res) => this.login.showRole(_req, res),
+    );
+
+    // Matches
+    this.app.get('/matches', async (req, res) => this.matches.index(req, res));
+    this.app.patch('/matches/:id/finish', auth, async (req, res) => this.matches.finish(req, res));
+    this.app.patch('/matches/:id', auth, async (req, res) => this.matches.patchMatch(req, res));
+    this.app.post(
+      '/matches',
+      auth,
+      validateMatch,
+      verifyEqualTeams,
+      async (req, res) => this.matches.create(req, res),
     );
   }
 

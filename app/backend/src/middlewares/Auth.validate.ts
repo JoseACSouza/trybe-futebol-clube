@@ -14,13 +14,10 @@ const auth = async (req: Request, res: Response, next: NextFunction) => {
   }
 
   const verifyBearer = extractToken(bearerToken);
-  console.log(verifyBearer);
   const token = verifyBearer[0] === 'Bearer' ? verifyBearer[1] : verifyBearer[0];
-  console.log(token);
 
   try {
     const decoded = jwt.verify(token, secret) as UserPayload;
-    console.log(decoded, '2');
     req.body.user = decoded;
     next();
   } catch (err) {

@@ -5,7 +5,7 @@ export default {
   up: async (queryInterface: QueryInterface) => {
     await queryInterface.createTable('teams', {
       id: {
-        type: DataTypes.INTEGER.UNSIGNED,
+        type: DataTypes.INTEGER,
         primaryKey: true,
         autoIncrement: true,
         allowNull: false,
